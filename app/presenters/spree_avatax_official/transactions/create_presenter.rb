@@ -49,10 +49,10 @@ module SpreeAvataxOfficial
       end
 
       def customer_code
-        code = (user.try(:email) || order.email)
-        return 'UNKNOWN' if code.blank?
+        email = (user.try(:email) || order.email)
+        return "customer-#{order.id}" if email.blank?
 
-        code
+        email
       end
 
       def ship_from_payload
