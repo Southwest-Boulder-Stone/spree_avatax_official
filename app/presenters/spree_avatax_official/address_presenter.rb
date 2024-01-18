@@ -1,7 +1,7 @@
 module SpreeAvataxOfficial
   class AddressPresenter
     def initialize(address:, address_type:)
-      @address      = address
+      @address = (address.is_a? Hash) ? address.with_indifferent_access : address
       @address_type = address_type
     end
 
@@ -26,7 +26,9 @@ module SpreeAvataxOfficial
       ).to_json
     end
 
-    def ship_from_address
+    def ship_from_address 
+      return unless address
+      
       {
         line1:      address[:line1],
         line2:      address[:line2],
