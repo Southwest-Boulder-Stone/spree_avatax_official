@@ -65,8 +65,8 @@ module SpreeAvataxOfficial
 
     # TODO: Handle the case where line item belongs to multiple stock locations - it may involve line items splitting
     def stock_location_address
-      stock_location = inventory_units.first.shipment&.stock_location
-      return unless stock_location.present?
+      stock_location = inventory_units.detect {|iu| iu.shipment&.stock_location.present? }&.shipment&.stock_location
+      return unless stock_location
 
       {
         line1:      stock_location.address1.try(:first, 50),
