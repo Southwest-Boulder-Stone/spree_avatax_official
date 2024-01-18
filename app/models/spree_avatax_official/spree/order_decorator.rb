@@ -38,20 +38,25 @@ module SpreeAvataxOfficial
       def tax_address_symbol
         ::Spree::Config.tax_using_ship_address ? :ship_address : :bill_address
       end
+      
+      def quote?
+        line_items.any? { |li| li.variant_per.price.zero? || li.variant_per.weight <= 0 }
+      end
 
       def create_tax_charge!
-        return super unless SpreeAvataxOfficial::Config.enabled
+        return super unless SpreeAvataxOfficial::Config.enabled && !quote?
 
         SpreeAvataxOfficial::CreateTaxAdjustmentsService.call(order: self)
       end
 
       def recalculate_avatax_taxes
-        return unless SpreeAvataxOfficial::Config.enabled
+        return unless SpreeAvataxOfficial::Config.enabled && !quote?
 
         SpreeAvataxOfficial::CreateTaxAdjustmentsService.call(order: self)
         update_totals
         persist_totals
       end
+
 
       def validate_tax_address
         response = SpreeAvataxOfficial::Address::Validate.call(
