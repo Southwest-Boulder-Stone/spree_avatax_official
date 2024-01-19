@@ -12,13 +12,13 @@ module SpreeAvataxOfficial
       end
 
       def update_tax_charge
-        return super unless SpreeAvataxOfficial::Config.enabled && !quote?
+        return super if !SpreeAvataxOfficial::Config.enabled || tax_unneeded?
 
         SpreeAvataxOfficial::CreateTaxAdjustmentsService.call(order: order)
       end
 
-      def quote?
-        order.line_items.any? { |li| li.variant_per.price.zero? || li.variant_per.weight <= 0 }
+      def tax_unneeded?
+        order.line_items.any?(&:quote_item?)
       end
 
       def avatax_tax_code

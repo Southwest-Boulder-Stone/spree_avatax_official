@@ -39,18 +39,18 @@ module SpreeAvataxOfficial
         ::Spree::Config.tax_using_ship_address ? :ship_address : :bill_address
       end
       
-      def quote?
-        line_items.any? { |li| li.variant_per.price.zero? || li.variant_per.weight <= 0 }
+      def tax_unneeded?
+        line_items.any?(&:quote_item?)
       end
 
       def create_tax_charge!
-        return super unless SpreeAvataxOfficial::Config.enabled && !quote?
+        return super if !SpreeAvataxOfficial::Config.enabled || tax_unneeded?
 
         SpreeAvataxOfficial::CreateTaxAdjustmentsService.call(order: self)
       end
 
       def recalculate_avatax_taxes
-        return unless SpreeAvataxOfficial::Config.enabled && !quote?
+        return if !SpreeAvataxOfficial::Config.enabled || tax_unneeded?
 
         SpreeAvataxOfficial::CreateTaxAdjustmentsService.call(order: self)
         update_totals
