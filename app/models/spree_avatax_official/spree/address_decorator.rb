@@ -2,7 +2,7 @@ module SpreeAvataxOfficial
   module Spree
     module AddressDecorator
       def self.prepended(base)
-        base.around_save :recalculate_avatax_taxes
+        # base.around_save :recalculate_avatax_taxes
         base.const_set   'OBSERVABLE_FIELDS', %w[address1 address2 city zipcode state_id country_id].freeze
       end
 
