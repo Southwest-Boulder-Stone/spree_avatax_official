@@ -40,8 +40,6 @@ module SpreeAvataxOfficial
       end
       
       def tax_unneeded?
-        return true unless ready_for_tax_or_shipping_calculation?
-
         line_items.any?(&:quote_item?)
       end
 
