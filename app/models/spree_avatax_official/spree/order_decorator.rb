@@ -2,7 +2,7 @@ module SpreeAvataxOfficial
   module Spree
     module OrderDecorator
       def self.prepended(base)
-        base.register_update_hook :recalculate_avatax_taxes
+        # base.register_update_hook :recalculate_avatax_taxes
 
         base.has_many :avatax_transactions, class_name: 'SpreeAvataxOfficial::Transaction'
 
