@@ -18,6 +18,10 @@ module SpreeAvataxOfficial
       def avatax_tax_code
         tax_category.try(:tax_code).presence || ::Spree::TaxCategory::DEFAULT_TAX_CODES['Shipment']
       end
+
+      def tax_address
+        shipping_methods.first.delivery_class == 'pickup' ? stock_location : order.tax_address
+      end
     end
   end
 end

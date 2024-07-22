@@ -59,9 +59,9 @@ module SpreeAvataxOfficial
       end
     end
 
-    def with_addresses?
-      item.class.name.demodulize == 'LineItem' && inventory_units.any?
-    end
+    # def with_addresses?
+    #   item.class.name.demodulize == 'LineItem' && inventory_units.any?
+    # end
 
     # TODO: Handle the case where line item belongs to multiple stock locations - it may involve line items splitting
     def stock_location_address
@@ -83,11 +83,11 @@ module SpreeAvataxOfficial
     end
 
     def ship_to_payload
-      SpreeAvataxOfficial::AddressPresenter.new(address: item.order.tax_address, address_type: 'ShipTo').to_json
+      SpreeAvataxOfficial::AddressPresenter.new(address: item.tax_address, address_type: 'ShipTo').to_json
     end
 
     def line_item_addresses_payload
-      with_addresses? ? ship_from_payload.merge(ship_to_payload) : {}
+      ship_from_payload.merge(ship_to_payload)
     end
   end
 end
