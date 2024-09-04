@@ -11,8 +11,8 @@ module SpreeAvataxOfficial
       case item.class.name.demodulize
       when 'LineItem'
         shared_payload.merge(line_item_payload)
-      else
-        shared_payload
+      when 'Shipment'
+        shared_payload.merge(shipment_payload)
       end
     end
 
@@ -33,11 +33,18 @@ module SpreeAvataxOfficial
         taxIncluded: item.included_in_price
       }
     end
-
+    
     def line_item_payload
       {
         description: item.name[0..255],
-        itemCode:    item.variant.sku
+        itemCode:    item.variant.sku,
+        amount:      item_amount
+      }
+    end
+
+    def shipment_payload
+      {
+        amount:      item.cost_without_transfer
       }
     end
 
