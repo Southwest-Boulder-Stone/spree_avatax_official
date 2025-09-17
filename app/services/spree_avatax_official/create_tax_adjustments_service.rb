@@ -1,7 +1,6 @@
 module SpreeAvataxOfficial
   class CreateTaxAdjustmentsService < SpreeAvataxOfficial::Base
     include SpreeAvataxOfficial::TaxAdjustmentLabelHelper
-
     def call(order:) # rubocop:disable Metrics/AbcSize
       return failure(::Spree.t('spree_avatax_official.create_tax_adjustments.order_canceled')) if order.canceled?
 
@@ -15,7 +14,7 @@ module SpreeAvataxOfficial
         send_transaction_to_avatax(order)
       end
 
-      return failure(build_error_message_from_response(avatax_response.value)) if avatax_failed_response?(avatax_response)
+      return failure(build_error_message_from_response(avatax_response.value)) if avatax_failed_response?(avatax_response, order)
 
       process_avatax_items(order, avatax_response.value['lines'])
 
@@ -36,8 +35,12 @@ module SpreeAvataxOfficial
       end
     end
 
-    def avatax_failed_response?(avatax_response)
-      avatax_response.failure? || avatax_response.value['totalTax'].zero?
+    def avatax_failed_response?(avatax_response, order)
+      avatax_response.failure? || avatax_response.value['totalTax'].zero? || false_tax_rate?(avatax_response, order)
+    end
+
+    def false_tax_rate?(avatax_response, order)
+      avatax_response.value['totalTax'] / order.item_total > FALSE_TAX_RATE_THRESHOLD_PERCENTAGE
     end
 
     def process_avatax_items(order, avatax_items)
