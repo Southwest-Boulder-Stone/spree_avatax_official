@@ -11,7 +11,7 @@ module SpreeAvataxOfficial
         open_timeout: SpreeAvataxOfficial::Config.open_timeout
       }
     ).freeze
-    FALSE_TAX_RATE_THRESHOLD_PERCENTAGE = 0.15.freeze
+    FALSE_TAX_RATE_THRESHOLD_PERCENTAGE = 0.015.freeze
 
     private
 
