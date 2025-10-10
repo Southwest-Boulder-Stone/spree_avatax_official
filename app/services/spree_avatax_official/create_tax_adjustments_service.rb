@@ -14,7 +14,13 @@ module SpreeAvataxOfficial
         send_transaction_to_avatax(order)
       end
 
-      return failure(build_error_message_from_response(avatax_response.value)) if avatax_failed_response?(avatax_response, order)
+      if avatax_failed_response?(avatax_response, order)
+        log_entry = ::Spree::LogEntry.new(source_id: order.id, source_type: "Spree::Order", details: avatax_response.value.to_json)
+        log_entry.save!
+        Sentry.set_context("log_entry", { "id": log_entry.id })
+        Sentry.capture_message("Avatax Response Failed! - See log entry context.")
+        return failure(build_error_message_from_response(avatax_response.value))
+      end
 
       process_avatax_items(order, avatax_response.value['lines'])
 
