@@ -42,10 +42,12 @@ module SpreeAvataxOfficial
     end
 
     def avatax_failed_response?(avatax_response, order)
-      avatax_response.failure? || avatax_response.value['totalTax'].zero? || false_tax_rate?(avatax_response, order)
+      avatax_response.failure? || false_tax_rate?(avatax_response, order)
     end
 
     def false_tax_rate?(avatax_response, order)
+      return true if avatax_response.value['totalExempt'].zero? && avatax_response.value['totalTax'].zero?
+
       avatax_response.value['totalTax'] / order.item_total > FALSE_TAX_RATE_THRESHOLD_PERCENTAGE
     end
 
