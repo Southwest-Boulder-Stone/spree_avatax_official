@@ -47,8 +47,9 @@ module SpreeAvataxOfficial
 
     def false_tax_rate?(avatax_response, order)
       return true if avatax_response.value['totalExempt'].zero? && avatax_response.value['totalTax'].zero?
-
-      avatax_response.value['totalTax'] / order.item_total > FALSE_TAX_RATE_THRESHOLD_PERCENTAGE
+      
+      taxable_total = order.taxable_items.sum {|i| i.respond_to?(:cost_without_transfer) ? i.cost_without_transfer : i.discounted_amount  }
+      (avatax_response.value['totalTax'] / taxable_total) > FALSE_TAX_RATE_THRESHOLD_PERCENTAGE
     end
 
     def process_avatax_items(order, avatax_items)
