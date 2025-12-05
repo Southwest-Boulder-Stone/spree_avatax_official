@@ -52,15 +52,18 @@ module SpreeAvataxOfficial
       end
 
       def recalculate_avatax_taxes
-        return if !SpreeAvataxOfficial::Config.enabled || tax_unneeded?
+        # return true if !SpreeAvataxOfficial::Config.enabled || tax_unneeded?
+        
+        ::Spree::Order.transaction do
+          self.lock!
+          result = SpreeAvataxOfficial::CreateTaxAdjustmentsService.call(order: self)
+          update_totals
+          persist_totals
 
-        result = SpreeAvataxOfficial::CreateTaxAdjustmentsService.call(order: self)
-        update_totals
-        persist_totals
 
-
-        update!(tax_calculation_failed: result.failure?, quote: result.failure?)
-        result
+          update!(tax_calculation_failed: result.failure?, quote: result.failure?)
+          result
+        end
       end
 
 
