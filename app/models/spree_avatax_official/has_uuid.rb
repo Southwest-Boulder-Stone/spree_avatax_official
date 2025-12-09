@@ -18,12 +18,7 @@ module SpreeAvataxOfficial
     def generate_uuid
       return unless avatax_uuid.blank?
 
-      self.avatax_uuid = 
-        if self.class.name.demodulize == 'LineItem'
-          SecureRandom.uuid
-        else
-          Digest::UUID.uuid_v3(AVATAX_CODES[self.class.name.demodulize], "#{self.order.number}-#{self.shipping_method.id}")
-        end
+      self.avatax_uuid = SecureRandom.uuid
     end
   end
 end
